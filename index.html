@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игральная кость</title>
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>     
+        /* Стили для центрирования содержимого */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #E6E6FA; /* Цвет фона страницы */
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Berkshire Swash', cursive; /* Установка шрифта Berkshire */
+            font-size: 55px; /* Размер шрифта заголовка */
+            margin-top: -150px; /* Поднимаем текст на 150px выше */
+            margin-bottom: 150px; /* Увеличиваем отступ снизу для большего расстояния до кубика */
+        }
+
+        /* Центрирование кубика по горизонтали и добавление расстояния между кубиками */
+        .cube-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px; /* Добавлено расстояние между кубиками */
+            margin-bottom: 70px; /* Отступ снизу для кнопок */
+            align-items: center; /* Центрирование кубиков по вертикали */
+        }
+
+        .cube {
+            width: 175px; /* Размер кубика увеличен на 75% */
+            height: 175px; /* Размер кубика увеличен на 75% */
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .face {
+            position: absolute;
+            width: 175px; /* Размер грани увеличен на 75% */
+            height: 175px; /* Размер грани увеличен на 75% */
+            background: black; /* Кубик черный */
+            border: 1px solid #000;
+        }
+
+        .front { transform: rotateY(0deg) translateZ(87.5px); }
+        .back { transform: rotateY(180deg) translateZ(87.5px); }
+        .left { transform: rotateY(-90deg) translateZ(87.5px); }
+        .right { transform: rotateY(90deg) translateZ(87.5px); }
+        .top { transform: rotateX(90deg) translateZ(87.5px); }
+        .bottom { transform: rotateX(-90deg) translateZ(87.5px); }
+
+        .dot {
+            display: block;
+            background: white; /* Цвет точек на гранях */
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        /* Центрирование точек на гранях 3D-кубика */
+        .dot.center { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 25px; height: 25px; }
+        .dot.top-left { top: 10%; left: 10%; width: 25px; height: 25px; }
+        .dot.top-right { top: 10%; right: 10%; width: 25px; height: 25px; }
+        .dot.bottom-left { bottom: 10%; left: 10%; width: 25px; height: 25px; }
+        .dot.bottom-right { bottom: 10%; right: 10%; width: 25px; height: 25px; }
+        .dot.middle-left { top: 50%; left: 10%; transform: translateY(-50%); width: 25px; height: 25px; }
+        .dot.middle-right { top: 50%; right: 10%; transform: translateY(-50%); width: 25px; height: 25px; }
+        .dot.top-center { top: 10%; left: 50%; transform: translate(-50%, -50%); width: 25px; height: 25px; }
+        .dot.bottom-center { bottom: 10%; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 25px; }
+
+        /* Стили для кнопок и их выравнивания */
+        .button-group {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Центрирование всей группы кнопок */
+            gap: 20px; /* Промежуток между кнопками */
+        }
+
+        .button-group button {
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+            width: 60px; /* Ширина кнопок установлена одинаковой */
+            height: 40px; /* Высота кнопок установлена одинаковой */
+        }
+
+        /* Стили для кнопки подбрасывания кубиков */
+        #roll-button {
+	    font-family: 'Berkshire Swash', cursive; /* Установка шрифта Berkshire для кнопки Roll */
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+            width: 100px; /* Ширина кнопки Roll */
+        }
+  
+         .footer-text {
+            position: fixed; /* Фиксированное положение */
+            bottom: 10px; /* Отступ от нижнего края */
+            right: 10px; /* Отступ от правого края */
+            font-size: 12px; /* Размер шрифта */
+            color: #000; /* Цвет текста */
+            opacity: 0.5; /* Полупрозрачность текста (если нужно) */ 
+            font-family: 'Berkshire Swash', cursive; /* Установка шрифта Berkshire */ 
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Roll the dice </h1>
+
+        <!-- Контейнер для кубиков -->
+        <div class="cube-container" id="cube-container">
+            <!-- Начальный кубик -->
+            <div class="cube" id="cube-1">
+                <div class="face front">
+                    <div class="dot center"></div>
+                </div>
+                <div class="face back">
+                    <div class="dot top-left"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face left">
+                    <div class="dot top-left"></div>
+                    <div class="dot center"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face right">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face top">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                    <div class="dot center"></div>
+                </div>
+                <div class="face bottom">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                    <div class="dot middle-left"></div>
+                    <div class="dot middle-right"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопки для управления кубиками -->
+        <div class="button-group">
+            <button id="remove-cube-button">-</button>
+            <button id="roll-button"> Roll </button>
+            <button id="add-cube-button">+</button>
+        </div>
+    </div>
+
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function createCube() {
+            const cubeContainer = document.getElementById('cube-container');
+            const cubeCount = cubeContainer.getElementsByClassName('cube').length + 1;
+            const cubeId = `cube-${cubeCount}`;
+
+            // Создание нового кубика
+            const newCube = document.createElement('div');
+            newCube.className = 'cube';
+            newCube.id = cubeId;
+
+            // Добавление граней и точек
+            newCube.innerHTML = `
+                <div class="face front">
+                    <div class="dot center"></div>
+                </div>
+                <div class="face back">
+                    <div class="dot top-left"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face left">
+                    <div class="dot top-left"></div>
+                    <div class="dot center"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face right">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                </div>
+                <div class="face top">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                    <div class="dot center"></div>
+                </div>
+                <div class="face bottom">
+                    <div class="dot top-left"></div>
+                    <div class="dot top-right"></div>
+                    <div class="dot bottom-left"></div>
+                    <div class="dot bottom-right"></div>
+                    <div class="dot middle-left"></div>
+                    <div class="dot middle-right"></div>
+                </div>
+            `;
+
+            cubeContainer.appendChild(newCube);
+        }
+
+        function removeCube() {
+            const cubeContainer = document.getElementById('cube-container');
+            const cubes = cubeContainer.getElementsByClassName('cube');
+            if (cubes.length > 0) {
+                cubeContainer.removeChild(cubes[cubes.length - 1]);
+            }
+        }
+
+        function rollCubes() {
+            const cubes = document.getElementsByClassName('cube');
+            Array.from(cubes).forEach(cube => {
+                const randomX = getRandomInt(1, 4) * 90;
+                const randomY = getRandomInt(1, 4) * 90;
+                cube.style.transform = `rotateX(${randomX}deg) rotateY(${randomY}deg)`;
+            });
+        }
+
+        document.getElementById('add-cube-button').addEventListener('click', createCube);
+        document.getElementById('remove-cube-button').addEventListener('click', removeCube);
+        document.getElementById('roll-button').addEventListener('click', rollCubes);
+    </script>
+
+    <div class="footer-text">by Alexandra</div>
+
+</body>
+</html>
